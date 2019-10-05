@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameStateNotifier.h"
 #include "BlockDropper.generated.h"
 
 class ABlock;
@@ -11,7 +12,8 @@ class UParticleSystemComponent;
 class USoundCue;
 
 UCLASS()
-class BLOCKDROPGAME_API ABlockDropper : public AActor
+class BLOCKDROPGAME_API ABlockDropper 
+	: public AActor, public IGameStateNotifier
 {
 	GENERATED_BODY()
 	
@@ -28,6 +30,10 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void HandleBlockHit();
+
+	//~ Begin IGameStateNotifier Interface
+	virtual void NotifyState(const EGameState::Type) override;
+	//~ End IGameStateNotifier Interface
 
 public:	
 	// Called every frame
@@ -64,6 +70,10 @@ protected:
 	// The sound played on scoring
 	UPROPERTY(EditAnywhere)
 	USoundCue* ScoredCue;
+
+	// The sound played on failing (game over is the current fail state)
+	UPROPERTY(EditAnywhere)
+	USoundCue* FailedCue;
 	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ABlock> BlockClass;

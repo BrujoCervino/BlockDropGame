@@ -1,0 +1,14 @@
+Basic ToDos here only:
+
+# Fix the floating block glitch
+# Get a really ugly hud showing the current score
+
+Extra polish:
+
+@ Screenshake when the block lands
+@ 
+
+Far future polish, low priority:
+
+? Different game modes, which hold a difficulty struct
+? Extremely difficult mode, featuring super wobbly tower

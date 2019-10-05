@@ -18,6 +18,7 @@ ABlockDropper::ABlockDropper()
 	SolidMaterial(nullptr),			  
 	GhostlyMaterial(nullptr),	
 	ScoredCue(nullptr),
+	FailedCue(nullptr),
 	BlockClass(ABlock::StaticClass()),
 	HeightStep(20.0f),				  
 	BlockMoveSpeed(30.0f),			  
@@ -30,9 +31,11 @@ ABlockDropper::ABlockDropper()
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
+	// If the particle exists (has been set in the editor)
 	if (PlacingParticle)
 	{
-		RootComponent = PlacingParticle;
+		// Let it be the root of this actor
+		SetRootComponent(PlacingParticle);
 	}
 }
 
@@ -44,7 +47,7 @@ void ABlockDropper::NotifyScored()
 
 		// Use pitch multiplier to have 5 different pitches for scoring
 		
-		UGameplayStatics::PlaySound2D(this, ScoredCue, 1.0f);
+		UGameplayStatics::PlaySound2D(this, ScoredCue);
 	}
 	// Tell the player controller we scored
 	
@@ -52,6 +55,11 @@ void ABlockDropper::NotifyScored()
 
 void ABlockDropper::NotifyFailed()
 {
+	// Play a sound to indicate failure
+	UGameplayStatics::PlaySound2D(this, FailedCue);
+
+
+
 	// Restart the current level
 	const FName LevelName = *UGameplayStatics::GetCurrentLevelName(this);
 	UGameplayStatics::OpenLevel(this, LevelName);
@@ -76,6 +84,11 @@ void ABlockDropper::HandleBlockHit()
 	{
 		// Check whether the current block is touching the floor
 	}
+}
+
+void ABlockDropper::NotifyState(const EGameState::Type)
+{
+
 }
 
 // Called every frame

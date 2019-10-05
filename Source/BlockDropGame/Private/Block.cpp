@@ -8,7 +8,7 @@
 ABlock::ABlock()
 	:
 	Mesh(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"))),
-	bScoreNotified(false)
+	bHasSentNotification(false)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -31,8 +31,8 @@ void ABlock::BeginPlay()
 
 void ABlock::NotifyScored()
 {
-	// If this block hasn't already called NotifyScored,
-	if (!GetScoreNotified())
+	// If this block actor hasn't already called NotifyScored or NotifyFailed,
+	if (!HasSentNotification())
 	{
 		// Tell the block dropper we scored
 		ABlockDropper* const BlockDropper = GetOwningBlockDropper();
@@ -41,18 +41,24 @@ void ABlock::NotifyScored()
 			BlockDropper->NotifyScored();
 			
 			// Disallow this block from calling this function more than once.
-			bScoreNotified = true;
+			bHasSentNotification = true;
 		}
 	}
 }
 
 void ABlock::NotifyFailed()
 {
-	// Tell the block dropper we scored
-	ABlockDropper* const BlockDropper = GetOwningBlockDropper();
-	if (BlockDropper)
+	// If this block actor hasn't already called NotifyScored or NotifyFailed,
+	if (!HasSentNotification())
 	{
-		BlockDropper->NotifyFailed();
+		// Tell the block dropper we scored
+		ABlockDropper* const BlockDropper = GetOwningBlockDropper();
+		if (BlockDropper)
+		{
+			BlockDropper->NotifyFailed();
+		}
+		// Disallow this block from calling this function more than once.
+		bHasSentNotification = true;
 	}
 }
 
@@ -61,9 +67,14 @@ ABlockDropper* ABlock::GetOwningBlockDropper() const
 	return Cast<ABlockDropper, AActor>( GetOwner() );
 }
 
-bool ABlock::GetScoreNotified() const
+bool ABlock::HasSentNotification() const
 {
-	return bScoreNotified;
+	return bHasSentNotification;
+}
+
+void ABlock::NotifyState(const EGameState::Type)
+{
+
 }
 
 // Called every frame

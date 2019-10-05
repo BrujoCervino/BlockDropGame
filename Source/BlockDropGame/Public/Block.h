@@ -4,12 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameStateNotifier.h"
 #include "Block.generated.h"
 
 class ABlockDropper;
 
 UCLASS()
-class BLOCKDROPGAME_API ABlock : public AActor
+class BLOCKDROPGAME_API ABlock 
+	: public AActor, public IGameStateNotifier
 {
 	GENERATED_BODY()
 	
@@ -33,7 +35,12 @@ protected:
 	// (Maybe move all activity with ABlockDropper to happen within ABlockDropper)
 	ABlockDropper* GetOwningBlockDropper() const;
 
-	bool GetScoreNotified() const;
+	// Returns bHasSentNotification
+	bool HasSentNotification() const;
+
+	//~ Begin IGameStateNotifier Interface
+	virtual void NotifyState(const EGameState::Type) override;
+	//~ End IGameStateNotifier Interface
 
 public:	
 	// Called every frame
@@ -52,8 +59,8 @@ private:
 	UPROPERTY(Category="BlockDropGame", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
 	UStaticMeshComponent* Mesh;
 
-	// Whether this block has notified other actors it has contributed to the player's score.
+	// Whether this block has notified other actors about failure/scoring
 	// Stops the game from spamming FX 
 	UPROPERTY(Category = "BlockDropGame", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	uint32 bScoreNotified :1;
+	uint32 bHasSentNotification :1;
 };
