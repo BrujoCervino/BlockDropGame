@@ -1,0 +1,8 @@
+Asset list:
+
+When larger than 15 assets in length, this list should be made into a Powerpoint Presentation
+
+# 1: Falling block - The whole block is a cat, with ears and tail protruding as a non-physics item.
+
+# 2: Dynamic material for falling block: 
+	this should consist of several greyscale masks which allow the developer to change the colour and quality (isSpotty/isStripy/isBlank/IsPatchy).

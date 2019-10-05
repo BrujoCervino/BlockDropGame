@@ -11,6 +11,7 @@ Extra polish:
 
 @ Consider merging ABlockDropper with ABlockDropPawn
 @ Store the number of blocks currently simulating physics and clamp it by the max number of blocks which can simulate physics
+@ Start thinking about art: draw some quick and awful concepts to demonstrate basic plans for graphics, so I can have an idea about an asset list
 
 Far future polish, low priority:
 
