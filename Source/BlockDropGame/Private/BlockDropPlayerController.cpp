@@ -12,3 +12,7 @@ ABlockDropPlayerController::ABlockDropPlayerController()
 void ABlockDropPlayerController::AddScore(const int32 ScoreToAdd)
 {
 }
+
+void ABlockDropPlayerController::NotifyState(const EGameState::Type State)
+{
+}

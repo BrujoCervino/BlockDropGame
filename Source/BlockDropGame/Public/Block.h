@@ -22,15 +22,15 @@ public:
 	// Returns the mesh subobject.
 	inline UStaticMeshComponent* GetMesh() const { return Mesh; }
 
+	virtual bool ShouldStopSimulatingPhysics() const;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	// Tell other actors that we scored
-	virtual void NotifyScored();
-
-	// Tell other actors we failed
-	virtual void NotifyFailed();
+	// Called when this actor hits, or is hit by, another actor
+	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, 
+		FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
 	// (Maybe move all activity with ABlockDropper to happen within ABlockDropper)
 	ABlockDropper* GetOwningBlockDropper() const;
@@ -39,16 +39,12 @@ protected:
 	bool HasSentNotification() const;
 
 	//~ Begin IGameStateNotifier Interface
-	virtual void NotifyState(const EGameState::Type) override;
+	virtual void NotifyState(const EGameState::Type State) override;
 	//~ End IGameStateNotifier Interface
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called when this actor hits, or is hit by, another actor
-	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, 
-		FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
 	// The tag against which we'll check whether another class is a block
 	static const FName BlockTag;

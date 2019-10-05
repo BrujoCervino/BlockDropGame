@@ -8,7 +8,7 @@ namespace EGameState
 {
 	enum Type : uint8
 	{
-		EGS_Failed = 0,
+		EGS_GameOver = 0,
 		EGS_Scored
 	};
 };

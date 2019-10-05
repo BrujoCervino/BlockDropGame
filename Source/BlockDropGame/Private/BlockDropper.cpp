@@ -8,6 +8,7 @@
 #include "Public/Block.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Sound/SoundCue.h"
+#include "TimerManager.h"
 
 // Sets default values
 ABlockDropper::ABlockDropper()
@@ -20,6 +21,7 @@ ABlockDropper::ABlockDropper()
 	ScoredCue(nullptr),
 	FailedCue(nullptr),
 	BlockClass(ABlock::StaticClass()),
+	ScoredCameraShake(),
 	HeightStep(20.0f),				  
 	BlockMoveSpeed(30.0f),			  
 	BlockMoveAmplitude(200.0f),		  
@@ -37,32 +39,6 @@ ABlockDropper::ABlockDropper()
 		// Let it be the root of this actor
 		SetRootComponent(PlacingParticle);
 	}
-}
-
-void ABlockDropper::NotifyScored()
-{
-	if (ScoredCue)
-	{
-		++PitchMultiplier;
-
-		// Use pitch multiplier to have 5 different pitches for scoring
-		
-		UGameplayStatics::PlaySound2D(this, ScoredCue);
-	}
-	// Tell the player controller we scored
-	
-}
-
-void ABlockDropper::NotifyFailed()
-{
-	// Play a sound to indicate failure
-	UGameplayStatics::PlaySound2D(this, FailedCue);
-
-
-
-	// Restart the current level
-	const FName LevelName = *UGameplayStatics::GetCurrentLevelName(this);
-	UGameplayStatics::OpenLevel(this, LevelName);
 }
 
 // Called when the game starts or when spawned
@@ -86,9 +62,48 @@ void ABlockDropper::HandleBlockHit()
 	}
 }
 
-void ABlockDropper::NotifyState(const EGameState::Type)
+void ABlockDropper::NotifyState(const EGameState::Type State)
 {
+	USoundBase* SoundToPlay = nullptr;
+	switch (State) 
+	{
+		case (EGameState::EGS_GameOver):
+		{
+			SoundToPlay = FailedCue;
+			break;
+		}
+		case (EGameState::EGS_Scored):
+		{
+			SoundToPlay = ScoredCue;
+			++PitchMultiplier;
+			break;
+		}
+		default:
+		{
+			// The switch should never be able to reach this point
+			checkNoEntry();
+			break;
+		}
+	};
 
+	// Play the sound correspondent to our new game state
+	UGameplayStatics::PlaySound2D(this, SoundToPlay);
+
+	// Tell the game mode we scored
+	if (IGameStateNotifier* const Notifier = Cast<IGameStateNotifier, AActor>(GetOwner()))
+	{
+		Notifier->NotifyState(State);
+	}
+
+	PlayBlockDropGameStateFX(State);
+}
+
+void ABlockDropper::PlayBlockDropGameStateFX(const EGameState::Type State)
+{
+	if (APlayerController* const PC = UGameplayStatics::GetPlayerController(this, 0))
+	{
+		PC->ClientPlayCameraShake(ScoredCameraShake);
+	}
 }
 
 // Called every frame
@@ -183,5 +198,10 @@ void ABlockDropper::ReleaseBlock()
 bool ABlockDropper::CurrentBlockIsFirstBlock() const
 {
 	return (SpawnedBlocks.Num() == 1);
+}
+
+bool ABlockDropper::BlocksShouldStopSimulatingPhysics() const
+{
+	return (SpawnedBlocks.Num() != 0 && SpawnedBlocks.Last()->ShouldStopSimulatingPhysics());
 }
 

@@ -4,13 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-//#include "BlockDropTypes.h"
+#include "BlockDropTypes.h"
 #include "GameStateNotifier.generated.h"
-
-namespace EGameState
-{
-	enum Type : uint8;
-};
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
@@ -32,4 +27,9 @@ public:
 	// Lets other actors know the state has changed
 	virtual void NotifyState(const EGameState::Type State) = 0;
 
+	// Bad practice: all interfaces should be pure virtual, but that would have resulted in duplication
+	// (this function is needed by all actors whhich implement this interface, to notify their owner of changes to the game state).
+	// Casts the given actor into an instance of this class.
+	// (Maybe use a message bus to avoid unncecessary communication between actors)
+	virtual IGameStateNotifier* const GetActorCastIntoGameStateNotifier(AActor* const ActorToCast) const;
 };

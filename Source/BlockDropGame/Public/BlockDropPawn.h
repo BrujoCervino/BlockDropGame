@@ -4,13 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "GameStateNotifier.h"
 #include "BlockDropPawn.generated.h"
 
 class ABlockDropper;
 class UCameraComponent;
 
 UCLASS()
-class BLOCKDROPGAME_API ABlockDropPawn : public APawn
+class BLOCKDROPGAME_API ABlockDropPawn 
+	: public APawn, public IGameStateNotifier
 {
 	GENERATED_BODY()
 
@@ -36,6 +38,10 @@ protected:
 
 	// Allows a block to begin falling
 	virtual void ReleaseBlock();
+
+	//~ Begin IGameStateNotifier Interface
+	virtual void NotifyState(const EGameState::Type State) override;
+	//~ End IGameStateNotifier Interface
 
 	// Returns BlockDropper
 	ABlockDropper* GetBlockDropper() const;

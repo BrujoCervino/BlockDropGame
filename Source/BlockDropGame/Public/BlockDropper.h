@@ -8,6 +8,7 @@
 #include "BlockDropper.generated.h"
 
 class ABlock;
+class UCameraShake;
 class UParticleSystemComponent;
 class USoundCue;
 
@@ -21,10 +22,6 @@ public:
 	// Sets default values for this actor's properties
 	ABlockDropper();
 
-	virtual void NotifyScored();
-
-	virtual void NotifyFailed();
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -32,8 +29,10 @@ protected:
 	virtual void HandleBlockHit();
 
 	//~ Begin IGameStateNotifier Interface
-	virtual void NotifyState(const EGameState::Type) override;
+	virtual void NotifyState(const EGameState::Type State) override;
 	//~ End IGameStateNotifier Interface
+
+	virtual void PlayBlockDropGameStateFX(const EGameState::Type State);
 
 public:	
 	// Called every frame
@@ -44,6 +43,9 @@ public:
 
 	// Returns whether
 	virtual bool CurrentBlockIsFirstBlock() const;
+
+	// Not sure where to call this yet, but it will indicate whether all blocks should stop simulating physics
+	virtual bool BlocksShouldStopSimulatingPhysics() const;
 
 protected:  
 
@@ -77,6 +79,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ABlock> BlockClass;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UCameraShake> ScoredCameraShake;
 
 	// Amount this dropper rises after placing each block
 	UPROPERTY(EditAnywhere)

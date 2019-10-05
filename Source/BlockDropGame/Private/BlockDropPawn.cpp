@@ -61,6 +61,25 @@ void ABlockDropPawn::ReleaseBlock()
 	}
 }
 
+void ABlockDropPawn::NotifyState(const EGameState::Type State)
+{
+	switch (State)
+	{
+		case(EGameState::EGS_GameOver):
+		{
+			break;
+		}
+		case(EGameState::EGS_Scored):
+		{
+			break;
+		}
+	}
+	if (IGameStateNotifier* const Notifier = Cast<IGameStateNotifier, AActor>(GetOwner()))
+	{
+		Notifier->NotifyState(State);
+	}
+}
+
 ABlockDropper * ABlockDropPawn::GetBlockDropper() const
 {
 	return BlockDropper;

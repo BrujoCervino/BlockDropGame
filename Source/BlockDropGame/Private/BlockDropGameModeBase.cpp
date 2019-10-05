@@ -6,10 +6,15 @@
 #include "Kismet/GameplayStatics.h"
 #include "Public/BlockDropPawn.h"
 #include "Public/BlockDropper.h"
+#include "TimerManager.h"
 
 ABlockDropGameModeBase::ABlockDropGameModeBase()
+	:
+	BlockDropper(nullptr),
+	BlockDropperSpawnHeight(20.0f),
+	RestartLevelTimerHandle(),
+	TimeSecondsUntilLevelRestarts(0.5f)
 {
-	BlockDropperSpawnHeight = 20.0f;
 }
 
 ABlockDropper* ABlockDropGameModeBase::GetBlockDropper() const
@@ -19,6 +24,8 @@ ABlockDropper* ABlockDropGameModeBase::GetBlockDropper() const
 
 void ABlockDropGameModeBase::BeginPlay()
 {
+	Super::BeginPlay();
+
 	// If the current world is valid
 	if (UWorld* const CurrentWorld = GetWorld())
 	{
@@ -44,6 +51,33 @@ void ABlockDropGameModeBase::BeginPlay()
 			BlockDropPawn->SetBlockDropper(BlockDropper);
 			// Store a pointer (of class AActor) to BlockDropper within BlockDropPawn
 			BlockDropper->SetOwner(BlockDropPawn);
+			// Finally, allow the pawn to interact with this game mode:
+			BlockDropPawn->SetOwner(this);
 		}
+	}
+}
+
+void ABlockDropGameModeBase::NotifyState(const EGameState::Type State)
+{
+	switch (State) 
+	{
+		case(EGameState::EGS_GameOver):
+		{
+			RestartLevel();
+			break;
+		}
+		case(EGameState::EGS_Scored):
+		{
+			break;
+		}
+	}
+}
+
+void ABlockDropGameModeBase::RestartLevel()
+{
+	// After TimeSecondsUntilLevelRestarts, restart the level
+	if(APlayerController* const PC = UGameplayStatics::GetPlayerController(this, 0))
+	{
+		GetWorldTimerManager().SetTimer(RestartLevelTimerHandle, PC, &APlayerController::RestartLevel, TimeSecondsUntilLevelRestarts);
 	}
 }

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "GameStateNotifier.h"
 #include "BlockDropGameModeBase.generated.h"
 
 class ABlockDropper;
@@ -12,7 +13,8 @@ class ABlockDropper;
  * 
  */
 UCLASS()
-class BLOCKDROPGAME_API ABlockDropGameModeBase : public AGameModeBase
+class BLOCKDROPGAME_API ABlockDropGameModeBase 
+	: public AGameModeBase, public IGameStateNotifier
 {
 	GENERATED_BODY()
 
@@ -21,6 +23,13 @@ class BLOCKDROPGAME_API ABlockDropGameModeBase : public AGameModeBase
 protected:
 
 	virtual void BeginPlay() override;
+
+	//~ Begin IGameStateNotifier Interface
+	virtual void NotifyState(const EGameState::Type State) override;
+	//~ End IGameStateNotifier Interface
+
+	// 
+	virtual void RestartLevel();
 
 	UPROPERTY(Category = "BlockDropGame", EditAnywhere)
 	TSubclassOf<class ABlockDropper> BlockDropperClass;
@@ -35,4 +44,9 @@ private:
 	UPROPERTY(Category = "BlockDropGame", EditAnywhere, BlueprintReadOnly, meta = ( AllowPrivateAccess = "true" ))
 	float BlockDropperSpawnHeight;
 
+	UPROPERTY(Category = "BlockDropGame", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	FTimerHandle RestartLevelTimerHandle;
+
+	UPROPERTY(Category = "BlockDropGame", EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	float TimeSecondsUntilLevelRestarts;
 };

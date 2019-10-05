@@ -23,42 +23,37 @@ ABlock::ABlock()
 	Tags.AddUnique(BlockTag); // Add the block tag, so other blocks know this is a block
 }
 
+bool ABlock::ShouldStopSimulatingPhysics() const
+{
+	return (bHasSentNotification && GetVelocity().IsNearlyZero());
+}
+
 // Called when the game starts or when spawned
 void ABlock::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void ABlock::NotifyScored()
+void ABlock::NotifyHit(UPrimitiveComponent * MyComp, AActor * Other, UPrimitiveComponent * OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult & Hit)
 {
-	// If this block actor hasn't already called NotifyScored or NotifyFailed,
-	if (!HasSentNotification())
+	// If the other actor is also a block,
+	if (Other->ActorHasTag(BlockTag))
 	{
-		// Tell the block dropper we scored
-		ABlockDropper* const BlockDropper = GetOwningBlockDropper();
-		if (BlockDropper)
-		{
-			BlockDropper->NotifyScored();
-			
-			// Disallow this block from calling this function more than once.
-			bHasSentNotification = true;
-		}
+		// Begin ticking, so we can check velocity
+		SetActorTickEnabled(true);
+		GetMesh()->SetNotifyRigidBodyCollision(false);
 	}
-}
-
-void ABlock::NotifyFailed()
-{
-	// If this block actor hasn't already called NotifyScored or NotifyFailed,
-	if (!HasSentNotification())
+	// Elsewise, if the this block is the first ever spawned block,
+	else if (GetOwningBlockDropper()->CurrentBlockIsFirstBlock())
 	{
-		// Tell the block dropper we scored
-		ABlockDropper* const BlockDropper = GetOwningBlockDropper();
-		if (BlockDropper)
-		{
-			BlockDropper->NotifyFailed();
-		}
-		// Disallow this block from calling this function more than once.
-		bHasSentNotification = true;
+		// Allow the first falling block to touch the ground
+		NotifyState(EGameState::EGS_Scored);
+		GetMesh()->SetSimulatePhysics(false);
+	}
+	// Else, we must have failed.
+	else
+	{
+		NotifyState(EGameState::EGS_GameOver);
 	}
 }
 
@@ -72,9 +67,19 @@ bool ABlock::HasSentNotification() const
 	return bHasSentNotification;
 }
 
-void ABlock::NotifyState(const EGameState::Type)
+void ABlock::NotifyState(const EGameState::Type State)
 {
-
+	// If this block actor hasn't already called NotifyScored or NotifyFailed,
+	if (!HasSentNotification())
+	{
+		// Tell the block dropper we scored
+		if ( IGameStateNotifier* const Notifier = Cast<IGameStateNotifier, AActor>( GetOwner() ) )
+		{
+			Notifier->NotifyState(State);
+		}
+		// Disallow this block from calling this function more than once.
+		bHasSentNotification = true;
+	}
 }
 
 // Called every frame
@@ -84,31 +89,8 @@ void ABlock::Tick(float DeltaTime)
 	
 	if (GetVelocity() != FVector::ZeroVector)
 	{
-		NotifyScored();
+		NotifyState(EGameState::EGS_Scored);
 		SetActorTickEnabled(false);
-	}
-}
-
-void ABlock::NotifyHit(UPrimitiveComponent * MyComp, AActor * Other, UPrimitiveComponent * OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult & Hit)
-{
-	// If the other actor is also a block,
-	if (Other->ActorHasTag(BlockTag))		
-	{
-		// Begin ticking, so we can check velocity
-		SetActorTickEnabled(true);
-		GetMesh()->SetNotifyRigidBodyCollision(false);
-	}
-	// Elsewise, if the this block is the first ever spawned block,
-	else if (GetOwningBlockDropper()->CurrentBlockIsFirstBlock())
-	{
-		// Allow the first falling block to touch the ground
-		NotifyScored();
-		GetMesh()->SetSimulatePhysics(false);
-	}
-	else
-	{
-		// Restart the level
-		NotifyFailed();
 	}
 }
 
