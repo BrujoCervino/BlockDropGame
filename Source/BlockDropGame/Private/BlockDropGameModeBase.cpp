@@ -13,8 +13,29 @@ ABlockDropGameModeBase::ABlockDropGameModeBase()
 	BlockDropper(nullptr),
 	BlockDropperSpawnHeight(20.0f),
 	RestartLevelTimerHandle(),
-	TimeSecondsUntilLevelRestarts(0.5f)
+	TimeSecondsUntilLevelRestarts(0.5f),
+	PointsPerSuccessfulHit(5)
 {
+}
+
+int32 ABlockDropGameModeBase::GetScorePerGameState(const EGameState::Type State)
+{
+	int32 Ret = 0;
+	
+	switch (State)
+	{
+		case(EGameState::EGS_GameOver):
+		{
+			break;
+		}
+		case(EGameState::EGS_Scored):
+		{
+			Ret = PointsPerSuccessfulHit;
+			break;
+		}
+	}
+	
+	return Ret;
 }
 
 ABlockDropper* ABlockDropGameModeBase::GetBlockDropper() const

@@ -18,7 +18,13 @@ class BLOCKDROPGAME_API ABlockDropGameModeBase
 {
 	GENERATED_BODY()
 
+public:
+
+	// Sets default values for this actor's properties
 	ABlockDropGameModeBase();
+
+	// Returns the score awarded for the given game state
+	int32 GetScorePerGameState(const EGameState::Type State);
 
 protected:
 
@@ -49,4 +55,8 @@ private:
 
 	UPROPERTY(Category = "BlockDropGame", EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float TimeSecondsUntilLevelRestarts;
+
+	// Score awarded for the most basic method of scoring: one block successfully fell onto another
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	int32 PointsPerSuccessfulHit;
 };

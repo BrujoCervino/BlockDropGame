@@ -3,13 +3,15 @@ Basic ToDos here only:
 # Fix the floating block glitch:
 	~ Blocks should not stop checking what they hit until they stop simulating physics: what if they fall 
 		off? (Could be done optimally by using a kill volume which triggers game over on overlap by a physics-simulating block)
-# Get a really ugly hud showing the current score
-# The player's score needs to be modified via the player controller
 # Consider using delegates and the message bus, to avoid duplication of code by the IGameStateNotifier class
 # Solve design problem: why does the game mode know about the block dropper? It should talk to it via communication with the pawn class
+# After a certain amount of time, or another button has been pressed, ABlockDropPawn::bPlayerRequestedQuitGame must be reset to false.
+
 Extra polish:
 
-@ Consider merging ABlockDropper with ABlockDropPawn
+@ Add music
+@ Add a quit to menu button
+@ Add a quit app button
 @ Store the number of blocks currently simulating physics and clamp it by the max number of blocks which can simulate physics
 @ Start thinking about art: draw some quick and awful concepts to demonstrate basic plans for graphics, so I can have an idea about an asset list
 

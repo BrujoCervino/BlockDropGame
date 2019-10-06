@@ -25,11 +25,12 @@ class BLOCKDROPGAME_API IGameStateNotifier
 public:
 	
 	// Lets other actors know the state has changed
+	// (Not passing by const reference because EGameState is only one byte large)
 	virtual void NotifyState(const EGameState::Type State) = 0;
 
 	// Bad practice: all interfaces should be pure virtual, but that would have resulted in duplication
 	// (this function is needed by all actors whhich implement this interface, to notify their owner of changes to the game state).
 	// Casts the given actor into an instance of this class.
-	// (Maybe use a message bus to avoid unncecessary communication between actors)
-	virtual IGameStateNotifier* const GetActorCastIntoGameStateNotifier(AActor* const ActorToCast) const;
+	// (Maybe use a message bus to avoid unnececessary communication between actors)
+	virtual IGameStateNotifier* const GetObjectCastIntoGameStateNotifier(UObject* const ObjectToCast) const;
 };

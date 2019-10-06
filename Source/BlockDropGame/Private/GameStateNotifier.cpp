@@ -5,7 +5,7 @@
 
 // Add default functionality here for any IStateNotifier functions that are not pure virtual.
 
-IGameStateNotifier* const IGameStateNotifier::GetActorCastIntoGameStateNotifier(AActor* const ActorToCast) const
+IGameStateNotifier* const IGameStateNotifier::GetObjectCastIntoGameStateNotifier(UObject* const ObjectToCast) const
 {
-	return Cast<IGameStateNotifier, AActor>(ActorToCast);
+	return Cast<IGameStateNotifier, UObject>(ObjectToCast);
 }

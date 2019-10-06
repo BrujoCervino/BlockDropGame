@@ -39,6 +39,13 @@ protected:
 	// Allows a block to begin falling
 	virtual void ReleaseBlock();
 
+	// Ask whether the player wants to quit before actually exiting
+	bool RequestQuitGame();
+
+	// Attemps to quit the game, asking the player first
+	// Returns whether the quit was successful
+	void QuitGame();
+
 	//~ Begin IGameStateNotifier Interface
 	virtual void NotifyState(const EGameState::Type State) override;
 	//~ End IGameStateNotifier Interface
@@ -55,4 +62,7 @@ private:
 	// The camera attached to this player
 	UPROPERTY(Category = "BlockDropGame", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* Camera;
+
+	UPROPERTY(VisibleAnywhere)
+	uint32 bPlayerRequestedQuitGame : 1;
 };
