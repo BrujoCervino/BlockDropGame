@@ -1,22 +1,40 @@
+Glitches/Issues:
+
+
+* The camera and block dropper have gone too high after about 25 blocks: the rate at which they rise should be relative to each block's size.
+* Game doesn't fail when blocks fall off the tower (solve this with a volume whose overlap detects falling blocks).
+* Game doesn't fail when blocks touch a block then touch a non-block actor 
+	(solve this by only letting them "relax" when they've touched the first block).
+
+=================================================================================================================================================
+
 Basic ToDos here only:
 
-# Fix the floating block glitch:
-	~ Blocks should not stop checking what they hit until they stop simulating physics: what if they fall 
-		off? (Could be done optimally by using a kill volume which triggers game over on overlap by a physics-simulating block)
+
 # Consider using delegates and the message bus, to avoid duplication of code by the IGameStateNotifier class
 # Solve design problem: why does the game mode know about the block dropper? It should talk to it via communication with the pawn class
 # After a certain amount of time, or another button has been pressed, ABlockDropPawn::bPlayerRequestedQuitGame must be reset to false.
 
+=================================================================================================================================================
+
+
 Extra polish:
 
+@ Blocks should change colour for every few placed
 @ Add music
 @ Add a quit to menu button
 @ Add a quit app button
 @ Store the number of blocks currently simulating physics and clamp it by the max number of blocks which can simulate physics
-@ Start thinking about art: draw some quick and awful concepts to demonstrate basic plans for graphics, so I can have an idea about an asset list
+@ Start thinking about art: draw some quick and awful concepts to demonstrate basic plans for graphics,
+	so I can have an idea about an asset list
+
+=================================================================================================================================================
+
 
 Far future polish, low priority:
 
 ? Different game modes, which hold a difficulty struct
 ? Extremely difficult mode, featuring super wobbly tower
 ? Blocks which are allowed to permanently stop simulating physics should be batched as (maybe hierarchical) instanced static meshes
+
+=================================================================================================================================================

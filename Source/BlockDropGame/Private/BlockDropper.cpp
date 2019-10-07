@@ -148,7 +148,7 @@ void ABlockDropper::Tick(float DeltaTime)
 			// To avoid unfair gameplay, every few blocks stacked will stop simulating physics. 
 			// This means offscreen/very low blocks' positions can't decrease the stability of the tower
 			const int Moduloer = 3;
-			if (SpawnedBlocks.Num() != 0 && SpawnedBlocks.Num() % Moduloer == 0)
+			if (BlocksShouldStopSimulatingPhysics() && SpawnedBlocks.Num() % Moduloer == 0)
 			{
 				for (auto It = SpawnedBlocks.CreateConstIterator(); It; ++It)
 				{
@@ -195,9 +195,12 @@ void ABlockDropper::ReleaseBlock()
 	bPlayerChoosingDropPoint = false;
 }
 
-bool ABlockDropper::CurrentBlockIsFirstBlock() const
+bool ABlockDropper::CurrentBlockIsFirstBlock(AActor const * const InBlock ) const
 {
-	return (SpawnedBlocks.Num() == 1);
+	const FString FirstBlockName = GetDebugName(SpawnedBlocks[0]);
+	const FString InBlockName = GetDebugName(InBlock);
+
+	return FirstBlockName.Equals(InBlockName, ESearchCase::CaseSensitive);
 }
 
 bool ABlockDropper::BlocksShouldStopSimulatingPhysics() const

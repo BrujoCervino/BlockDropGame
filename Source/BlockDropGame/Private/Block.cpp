@@ -44,7 +44,7 @@ void ABlock::NotifyHit(UPrimitiveComponent * MyComp, AActor * Other, UPrimitiveC
 		GetMesh()->SetNotifyRigidBodyCollision(false);
 	}
 	// Elsewise, if the this block is the first ever spawned block,
-	else if (GetOwningBlockDropper()->CurrentBlockIsFirstBlock())
+	else if (GetOwningBlockDropper()->CurrentBlockIsFirstBlock(this))
 	{
 		// Allow the first falling block to touch the ground
 		NotifyState(EGameState::EGS_Scored);

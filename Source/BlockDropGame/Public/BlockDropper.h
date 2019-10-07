@@ -42,7 +42,7 @@ public:
 	virtual void ReleaseBlock();
 
 	// Returns whether
-	virtual bool CurrentBlockIsFirstBlock() const;
+	virtual bool CurrentBlockIsFirstBlock(AActor const * const InBlock) const;
 
 	// Not sure where to call this yet, but it will indicate whether all blocks should stop simulating physics
 	virtual bool BlocksShouldStopSimulatingPhysics() const;
