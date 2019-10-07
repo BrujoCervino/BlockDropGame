@@ -59,4 +59,7 @@ private:
 	// Score awarded for the most basic method of scoring: one block successfully fell onto another
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	int32 PointsPerSuccessfulHit;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	int32 PointsPerSecondaryPointsRewardingThing;
 };

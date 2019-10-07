@@ -74,6 +74,10 @@ void ABlockDropper::NotifyState(const EGameState::Type State)
 		}
 		case (EGameState::EGS_Scored):
 		{
+			
+		}
+		case (EGameState::EGS_SecondaryThing):
+		{
 			SoundToPlay = ScoredCue;
 			++PitchMultiplier;
 			break;

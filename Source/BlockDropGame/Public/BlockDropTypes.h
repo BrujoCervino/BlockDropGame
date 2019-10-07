@@ -9,6 +9,7 @@ namespace EGameState
 	enum Type : uint8
 	{
 		EGS_GameOver = 0,
-		EGS_Scored
+		EGS_Scored,
+		EGS_SecondaryThing
 	};
 };

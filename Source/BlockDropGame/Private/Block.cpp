@@ -37,18 +37,11 @@ void ABlock::BeginPlay()
 void ABlock::NotifyHit(UPrimitiveComponent * MyComp, AActor * Other, UPrimitiveComponent * OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult & Hit)
 {
 	// If the other actor is also a block,
-	if (Other->ActorHasTag(BlockTag))
+	if (Other->ActorHasTag(BlockTag) || GetOwningBlockDropper()->CurrentBlockIsFirstBlock(this))
 	{
 		// Begin ticking, so we can check velocity
 		SetActorTickEnabled(true);
 		GetMesh()->SetNotifyRigidBodyCollision(false);
-	}
-	// Elsewise, if the this block is the first ever spawned block,
-	else if (GetOwningBlockDropper()->CurrentBlockIsFirstBlock(this))
-	{
-		// Allow the first falling block to touch the ground
-		NotifyState(EGameState::EGS_Scored);
-		GetMesh()->SetSimulatePhysics(false);
 	}
 	// Else, we must have failed.
 	else
@@ -89,7 +82,10 @@ void ABlock::Tick(float DeltaTime)
 	
 	if (GetVelocity() != FVector::ZeroVector)
 	{
-		NotifyState(EGameState::EGS_Scored);
+		const EGameState::Type RAND_STATE_TEMP = FMath::RandBool() ? EGameState::EGS_Scored : EGameState::EGS_SecondaryThing;
+
+
+		NotifyState(/*EGameState::EGS_Scored*/ RAND_STATE_TEMP);
 		SetActorTickEnabled(false);
 	}
 }

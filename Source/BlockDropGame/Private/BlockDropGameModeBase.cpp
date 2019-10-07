@@ -14,7 +14,8 @@ ABlockDropGameModeBase::ABlockDropGameModeBase()
 	BlockDropperSpawnHeight(20.0f),
 	RestartLevelTimerHandle(),
 	TimeSecondsUntilLevelRestarts(0.5f),
-	PointsPerSuccessfulHit(5)
+	PointsPerSuccessfulHit(5),
+	PointsPerSecondaryPointsRewardingThing(20)
 {
 }
 
@@ -31,6 +32,17 @@ int32 ABlockDropGameModeBase::GetScorePerGameState(const EGameState::Type State)
 		case(EGameState::EGS_Scored):
 		{
 			Ret = PointsPerSuccessfulHit;
+			break;
+		}
+		case(EGameState::EGS_SecondaryThing):
+		{
+			Ret = PointsPerSecondaryPointsRewardingThing;
+			break;
+		}
+		default:
+		{
+			// The switch should never be able to reach this point
+			checkNoEntry();
 			break;
 		}
 	}

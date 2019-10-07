@@ -46,7 +46,12 @@ void ABlockDropPlayerController::NotifyState(const EGameState::Type State)
 		{
 			break;
 		}
+		
 		case(EGameState::EGS_Scored):
+		{
+			
+		}
+		case(EGameState::EGS_SecondaryThing):
 		{
 			int32 ScoreToDisplay = 0;
 			if (ABlockDropGameModeBase* const GM = Cast<ABlockDropGameModeBase, AActor>(GetOwner()->GetOwner()))

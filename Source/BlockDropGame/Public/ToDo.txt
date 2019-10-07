@@ -11,30 +11,38 @@ Glitches/Issues:
 Basic ToDos here only:
 
 
-# Consider using delegates and the message bus, to avoid duplication of code by the IGameStateNotifier class
-# Solve design problem: why does the game mode know about the block dropper? It should talk to it via communication with the pawn class
-# After a certain amount of time, or another button has been pressed, ABlockDropPawn::bPlayerRequestedQuitGame must be reset to false.
+# Design another means of gaining points: it's boring to get 5 points for every thing.
+# UX flow: Go to a high score screen on losing.
+# Save a high score and display it on the score hud.
 
 =================================================================================================================================================
 
-
 Extra polish:
+
 
 @ Blocks should change colour for every few placed
 @ Add music
-@ Add a quit to menu button
-@ Add a quit app button
-@ Store the number of blocks currently simulating physics and clamp it by the max number of blocks which can simulate physics
 @ Start thinking about art: draw some quick and awful concepts to demonstrate basic plans for graphics,
 	so I can have an idea about an asset list
 
 =================================================================================================================================================
 
-
 Far future polish, low priority:
+
 
 ? Different game modes, which hold a difficulty struct
 ? Extremely difficult mode, featuring super wobbly tower
-? Blocks which are allowed to permanently stop simulating physics should be batched as (maybe hierarchical) instanced static meshes
+? 
+
+=================================================================================================================================================
+
+Code: Design & Optimisations:
+
+
+` Consider using delegates and the message bus, to avoid duplication of code by the IGameStateNotifier class
+` Solve design problem: why does the game mode know about the block dropper? It should talk to it via communication with the pawn class
+` After a certain amount of time, or another button has been pressed, ABlockDropPawn::bPlayerRequestedQuitGame must be reset to false.
+` Blocks which are allowed to permanently stop simulating physics should be batched as (maybe hierarchical) instanced static meshes
+` Store the number of blocks currently simulating physics and clamp it by the max number of blocks which can simulate physics
 
 =================================================================================================================================================
