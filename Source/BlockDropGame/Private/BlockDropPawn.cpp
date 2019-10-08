@@ -6,7 +6,7 @@
 #include "Components/InputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "EngineUtils.h"
-#include "GameFramework/Controller.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
@@ -55,6 +55,7 @@ void ABlockDropPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("ReleaseBlock", IE_Pressed, this, &ABlockDropPawn::ReleaseBlock);
 
 	// UI-based actions & axes
+	PlayerInputComponent->BindAction("PauseGame", IE_Pressed, this, &ABlockDropPawn::PauseGame);
 	PlayerInputComponent->BindAction("QuitGame", IE_Pressed, this, &ABlockDropPawn::QuitGame);
 
 }
@@ -70,6 +71,12 @@ void ABlockDropPawn::ReleaseBlock()
 	{
 		BlockDropper->ReleaseBlock();
 	}
+}
+
+void ABlockDropPawn::PauseGame()
+{
+	const bool bShouldPause = !(UGameplayStatics::IsGamePaused(this));
+	UGameplayStatics::SetGamePaused(this, bShouldPause);
 }
 
 bool ABlockDropPawn::RequestQuitGame()

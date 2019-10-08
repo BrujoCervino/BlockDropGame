@@ -10,6 +10,7 @@ ABlockDropPlayerController::ABlockDropPlayerController()
 	:
 	CurrentWidget(nullptr),
 	ScoreWidgetClass(UUserWidget::StaticClass()),
+	PauseWidgetClass(UUserWidget::StaticClass()),
 	Score(0)
 {
 }
@@ -51,7 +52,7 @@ void ABlockDropPlayerController::NotifyState(const EGameState::Type State)
 		{
 			
 		}
-		case(EGameState::EGS_SecondaryThing):
+		case(EGameState::EGS_CollectedCollectable):
 		{
 			int32 ScoreToDisplay = 0;
 			if (ABlockDropGameModeBase* const GM = Cast<ABlockDropGameModeBase, AActor>(GetOwner()->GetOwner()))

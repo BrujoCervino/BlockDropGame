@@ -53,6 +53,11 @@ protected:
 	// The class of widget with which this class displays the score
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> ScoreWidgetClass;
+
+	// The class of widget with which this class displays the score
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> PauseWidgetClass;
+
 private:
 
 	// The current score (maybe this should be an unsigned int so it can go further?)

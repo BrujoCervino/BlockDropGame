@@ -82,10 +82,7 @@ void ABlock::Tick(float DeltaTime)
 	
 	if (GetVelocity() != FVector::ZeroVector)
 	{
-		const EGameState::Type RAND_STATE_TEMP = FMath::RandBool() ? EGameState::EGS_Scored : EGameState::EGS_SecondaryThing;
-
-
-		NotifyState(/*EGameState::EGS_Scored*/ RAND_STATE_TEMP);
+		NotifyState(EGameState::EGS_Scored);
 		SetActorTickEnabled(false);
 	}
 }

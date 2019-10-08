@@ -8,6 +8,7 @@
 #include "BlockDropper.generated.h"
 
 class ABlock;
+class ACollectable;
 class UCameraShake;
 class UParticleSystemComponent;
 class USoundCue;
@@ -32,6 +33,7 @@ protected:
 	virtual void NotifyState(const EGameState::Type State) override;
 	//~ End IGameStateNotifier Interface
 
+	// Don't use this until I find a better way of doing it with fewer switch statements
 	virtual void PlayBlockDropGameStateFX(const EGameState::Type State);
 
 public:	
@@ -73,6 +75,10 @@ protected:
 	UPROPERTY(EditAnywhere)
 	USoundCue* ScoredCue;
 
+	// The sound played on scoring
+	UPROPERTY(EditAnywhere)
+	USoundCue* CollectedCue;
+
 	// The sound played on failing (game over is the current fail state)
 	UPROPERTY(EditAnywhere)
 	USoundCue* FailedCue;
@@ -81,11 +87,24 @@ protected:
 	TSubclassOf<ABlock> BlockClass;
 
 	UPROPERTY(EditAnywhere)
+	TSubclassOf<ACollectable> CommonCollectableClass;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ACollectable> RareCollectableClass;
+
+	UPROPERTY(EditAnywhere)
 	TSubclassOf<UCameraShake> ScoredCameraShake;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UCameraShake> CollectedCameraShake;
 
 	// Amount this dropper rises after placing each block
 	UPROPERTY(EditAnywhere)
 	float HeightStep;
+
+	// The height (above the highest place block) at which a collectable can spawn
+	UPROPERTY(EditAnywhere)
+	float CollectableSpawnHeight;
 
 	// Speed (frequency) at which the block oscillates (move this to ABlock class).
 	UPROPERTY(EditAnywhere)

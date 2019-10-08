@@ -1,15 +1,15 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
 #pragma once
-
-#include "UObject/ObjectMacros.h"
-
-// Namespaced to avoid unecessarily (in this case) leaving values of this enum to global scope.
 
 namespace EGameState
 {
 	enum Type : uint8
 	{
-		EGS_GameOver = 0,
+		EGS_GameOver,
 		EGS_Scored,
-		EGS_SecondaryThing
+		EGS_CollectedCollectable,
+		EGS_CollectedSpecialCollectable,
+		EGS_MissedCollectable
 	};
-};
+}

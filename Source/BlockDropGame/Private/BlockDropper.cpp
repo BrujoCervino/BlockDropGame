@@ -2,9 +2,11 @@
 
 
 #include "BlockDropper.h"
-#include "Components/StaticMeshComponent.h" // Note: I can rid of this by making ABlock::SetMaterial
+#include "Collectable.h"
+#include "Components/StaticMeshComponent.h" // Note: I can rid of this by making ABlock::SetMaterial and ABlock::SetPhysicsState
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Public/Block.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Sound/SoundCue.h"
@@ -13,16 +15,21 @@
 // Sets default values
 ABlockDropper::ABlockDropper()
 	:
-	SpawnedBlocks(nullptr, 0),		  
+	SpawnedBlocks(nullptr, 0),
 	CurrentBlock(nullptr),
 	PlacingParticle(CreateDefaultSubobject<UParticleSystemComponent>(TEXT("PlacingParticle"))),
-	SolidMaterial(nullptr),			  
-	GhostlyMaterial(nullptr),	
+	SolidMaterial(nullptr),
+	GhostlyMaterial(nullptr),
 	ScoredCue(nullptr),
+	CollectedCue(nullptr),
 	FailedCue(nullptr),
 	BlockClass(ABlock::StaticClass()),
+	CommonCollectableClass(ACollectable::StaticClass()),
+	RareCollectableClass(ACollectable::StaticClass()),
 	ScoredCameraShake(),
-	HeightStep(20.0f),				  
+	CollectedCameraShake(),
+	HeightStep(20.0f),	
+	CollectableSpawnHeight(60.0f),
 	BlockMoveSpeed(30.0f),			  
 	BlockMoveAmplitude(200.0f),		  
 	bEntry(true),					  
@@ -64,7 +71,10 @@ void ABlockDropper::HandleBlockHit()
 
 void ABlockDropper::NotifyState(const EGameState::Type State)
 {
+	// Declare the FX played per game state:
 	USoundBase* SoundToPlay = nullptr;
+	TSubclassOf<UCameraShake> ShakeToPlay = TSubclassOf<UCameraShake>();
+
 	switch (State) 
 	{
 		case (EGameState::EGS_GameOver):
@@ -74,12 +84,18 @@ void ABlockDropper::NotifyState(const EGameState::Type State)
 		}
 		case (EGameState::EGS_Scored):
 		{
-			
-		}
-		case (EGameState::EGS_SecondaryThing):
-		{
 			SoundToPlay = ScoredCue;
+			ShakeToPlay = ScoredCameraShake;
+			// Increase the pitch of our sound
 			++PitchMultiplier;
+			break;
+		}
+		case (EGameState::EGS_CollectedCollectable):
+		{
+			SoundToPlay = CollectedCue;
+			ShakeToPlay = CollectedCameraShake;
+			// Increase the pitch of our sound more than usual, to show the collectable is an extra special way of earning points
+			PitchMultiplier += (int32)EGameState::EGS_CollectedCollectable;
 			break;
 		}
 		default:
@@ -92,22 +108,22 @@ void ABlockDropper::NotifyState(const EGameState::Type State)
 
 	// Play the sound correspondent to our new game state
 	UGameplayStatics::PlaySound2D(this, SoundToPlay);
+	
+	if (APlayerController* const PC = UGameplayStatics::GetPlayerController(this, 0))
+	{
+		PC->ClientPlayCameraShake(ShakeToPlay);
+	}
 
 	// Tell the game mode we scored
 	if (IGameStateNotifier* const Notifier = Cast<IGameStateNotifier, AActor>(GetOwner()))
 	{
 		Notifier->NotifyState(State);
 	}
-
-	PlayBlockDropGameStateFX(State);
 }
 
 void ABlockDropper::PlayBlockDropGameStateFX(const EGameState::Type State)
 {
-	if (APlayerController* const PC = UGameplayStatics::GetPlayerController(this, 0))
-	{
-		PC->ClientPlayCameraShake(ScoredCameraShake);
-	}
+	
 }
 
 // Called every frame
@@ -128,6 +144,7 @@ void ABlockDropper::Tick(float DeltaTime)
 		// If the CurrentWorld is valid,
 		if ( UWorld* const CurrentWorld = GetWorld() )
 		{
+			// If the current block exists, 
 			if (CurrentBlock)
 			{				
 				// Add the current block to the array of spawned blocks.
@@ -148,6 +165,22 @@ void ABlockDropper::Tick(float DeltaTime)
 
 			// Attach the placing particle to the current block
 			PlacingParticle->AttachToComponent(CurrentBlock->GetMesh(), FAttachmentTransformRules::KeepWorldTransform);
+
+			// Every so often (and if the topmost block is valid)
+			if (FMath::RandRange(0, 3) == 0 && SpawnedBlocks.Num() != 0)
+			{
+				// Print a string to confirm out collectable appeared (for if we can't see it)
+				UKismetSystemLibrary::PrintString(this, TEXT("Collectable placed!"));
+				
+				// Determine whether the class to spawn will be common or rare :)
+				UClass* const ClassToSpawn = FMath::RandRange(0,2) == 0? RareCollectableClass : CommonCollectableClass;
+
+				FTransform TransformOfHighestPlacedBlock = SpawnedBlocks.Last()->GetActorTransform();
+				TransformOfHighestPlacedBlock += FTransform(FRotator::ZeroRotator, FVector(0.0f, 0.0f, CollectableSpawnHeight), FVector::ZeroVector);
+				
+				// Spawn a collectable atop the topmost block
+				CurrentWorld->SpawnActor<ACollectable>(ClassToSpawn, TransformOfHighestPlacedBlock, BlockSpawnParams);
+			}
 
 			// To avoid unfair gameplay, every few blocks stacked will stop simulating physics. 
 			// This means offscreen/very low blocks' positions can't decrease the stability of the tower

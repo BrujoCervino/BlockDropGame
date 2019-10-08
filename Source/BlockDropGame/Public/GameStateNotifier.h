@@ -7,6 +7,8 @@
 #include "BlockDropTypes.h"
 #include "GameStateNotifier.generated.h"
 
+
+
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class UGameStateNotifier : public UInterface

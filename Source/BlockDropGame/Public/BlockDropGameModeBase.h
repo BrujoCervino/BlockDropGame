@@ -61,5 +61,5 @@ private:
 	int32 PointsPerSuccessfulHit;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	int32 PointsPerSecondaryPointsRewardingThing;
+	int32 PointsPerBasicCollectable;
 };

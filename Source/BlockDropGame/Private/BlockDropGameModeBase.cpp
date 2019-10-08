@@ -15,7 +15,7 @@ ABlockDropGameModeBase::ABlockDropGameModeBase()
 	RestartLevelTimerHandle(),
 	TimeSecondsUntilLevelRestarts(0.5f),
 	PointsPerSuccessfulHit(5),
-	PointsPerSecondaryPointsRewardingThing(20)
+	PointsPerBasicCollectable(20)
 {
 }
 
@@ -34,9 +34,9 @@ int32 ABlockDropGameModeBase::GetScorePerGameState(const EGameState::Type State)
 			Ret = PointsPerSuccessfulHit;
 			break;
 		}
-		case(EGameState::EGS_SecondaryThing):
+		case(EGameState::EGS_CollectedCollectable):
 		{
-			Ret = PointsPerSecondaryPointsRewardingThing;
+			Ret = PointsPerBasicCollectable;
 			break;
 		}
 		default:

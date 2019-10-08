@@ -39,6 +39,9 @@ protected:
 	// Allows a block to begin falling
 	virtual void ReleaseBlock();
 
+	// Pause the game and show the pause widget
+	void PauseGame();
+
 	// Ask whether the player wants to quit before actually exiting
 	bool RequestQuitGame();
 

@@ -11,15 +11,20 @@ Glitches/Issues:
 Basic ToDos here only:
 
 
-# Design another means of gaining points: it's boring to get 5 points for every thing.
-# UX flow: Go to a high score screen on losing.
-# Save a high score and display it on the score hud.
+# The shrinking collectable should destroy when its scale is about 0.02 (anything else is too long)
+# Shrinking collectable needs a sound for when it's missed.
+# Shrinking collectable needs a sound for when it's collected.
+# Simplify the pipeline for adding new means of scoring: maybe the game mode could own instances of structs relating to that kind of thing?
+# UX flow: Go to an ugly high score screen on losing.
+# Save a high score and display it on the score hud. If it's empty, display 0.
 
 =================================================================================================================================================
 
 Extra polish:
 
 
+@ Quick particle when shrinking collectable destructs
+@ Place collectables above and left/right of the top block to incentivise tricky play :)
 @ Blocks should change colour for every few placed
 @ Add music
 @ Start thinking about art: draw some quick and awful concepts to demonstrate basic plans for graphics,
@@ -31,14 +36,18 @@ Far future polish, low priority:
 
 
 ? Different game modes, which hold a difficulty struct
-? Extremely difficult mode, featuring super wobbly tower
-? 
+? Extremely difficult mode, featuring super wobbly tower 
+? Skins/shop
+? "Good"/"perfect": give extra score for accuracy. However this might conflict with the collectables which require you to
+	go sideways to collect them.
 
 =================================================================================================================================================
 
 Code: Design & Optimisations:
 
 
+` FAKE DESTROY: for collectables, the ability to fake destroy would surely help ( set their visibility to 0, their translation to (0,1000, 0)
+	and disable tick.
 ` Consider using delegates and the message bus, to avoid duplication of code by the IGameStateNotifier class
 ` Solve design problem: why does the game mode know about the block dropper? It should talk to it via communication with the pawn class
 ` After a certain amount of time, or another button has been pressed, ABlockDropPawn::bPlayerRequestedQuitGame must be reset to false.
