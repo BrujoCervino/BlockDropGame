@@ -7,9 +7,9 @@ namespace EGameState
 	enum Type : uint8
 	{
 		EGS_GameOver,
-		EGS_Scored,
-		EGS_CollectedCollectable,
-		EGS_CollectedSpecialCollectable,
+		EGS_PlacedCommonBlock,
+		EGS_CollectedCommonCollectable,
+		EGS_CollectedRareCollectable,
 		EGS_MissedCollectable
 	};
 }

@@ -19,10 +19,15 @@ void AShrinkingCollectable::Tick(float DeltaTime)
 	SetActorScale3D(FinalScale);
 
 	// This variable should live inside the game mode: so it only exists once, but can be exposed to the editor
-	const FVector SizeAtWhichDestroyed = FVector(FVector::OneVector*0.02);
-	if (FinalScale.Equals(SizeAtWhichDestroyed))
+	const float ZSizeAtWhichDestroyed = 0.1f;
+	if ( FMath::IsNearlyEqual(FinalScale.Z, ZSizeAtWhichDestroyed, 0.05f ) )
 	{
 		Destroy();
 		NotifyState(EGameState::EGS_MissedCollectable);
 	}
+}
+
+const EGameState::Type AShrinkingCollectable::GetCollectedGameState() const
+{
+	return EGameState::EGS_CollectedRareCollectable;
 }

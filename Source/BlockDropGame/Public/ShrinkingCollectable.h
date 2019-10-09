@@ -20,6 +20,12 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+protected:
+
+	//~ Begin interface ACollectable
+	virtual const EGameState::Type GetCollectedGameState() const override;
+	//~ End interface ACollectable
+
 private:
 
 	// The amount per tick which this actor shrinks.

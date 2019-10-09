@@ -29,6 +29,10 @@ public:
 	// Returns score
 	int32 GetScore() const;
 
+	// Called by the pawn, when paused.
+	// Should be done by event subscription :)
+	virtual void OnPaused(const bool bPaused);
+
 protected:
 
 	// Called when the game starts or when spawned
@@ -54,9 +58,13 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> ScoreWidgetClass;
 
-	// The class of widget with which this class displays the score
+	// The class of widget with which this class displays the pause menu
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<UUserWidget> PauseWidgetClass;
+	TSubclassOf<UUserWidget> PauseMenuWidgetClass;
+
+	// The class of widget with which this class displays the game over menu
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> GameOverMenuClass;
 
 private:
 

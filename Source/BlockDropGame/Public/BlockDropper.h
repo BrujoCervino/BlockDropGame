@@ -52,74 +52,90 @@ public:
 protected:  
 
 	// The dynamic array of blocks spawned by this dropper
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category="Blocks")
 	TArray<ABlock*> SpawnedBlocks;
 
 	// The current block being placed
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Blocks")
 	ABlock* CurrentBlock;
 
 	// The particle used to indicate placing an object
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Blocks|Placement")
 	UParticleSystemComponent* PlacingParticle;
 
 	// Material used when a block has been placed (move this to ABlock class).
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Blocks")
 	UMaterialInterface* SolidMaterial;
 
 	// Material used when a block is being placed (move this to ABlock class).
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Blocks|Placement")
 	UMaterialInterface* GhostlyMaterial;
 
 	// The sound played on scoring
 	UPROPERTY(EditAnywhere)
 	USoundCue* ScoredCue;
 
-	// The sound played on scoring
+	// The sound played on collecting a common collectable
 	UPROPERTY(EditAnywhere)
-	USoundCue* CollectedCue;
+	USoundCue* CommonCollectedCue;
+
+	// The sound played on collecting a rare collectable
+	UPROPERTY(EditAnywhere)
+	USoundCue* RareCollectedCue;
+
+	// The sound played on missing a rare collectable. Consider changing this to just a float with the pitch of -(RareCollectedCue->Pitch)
+	UPROPERTY(EditAnywhere)
+	USoundCue* RareMissedCue;
 
 	// The sound played on failing (game over is the current fail state)
 	UPROPERTY(EditAnywhere)
 	USoundCue* FailedCue;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Blocks")
 	TSubclassOf<ABlock> BlockClass;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Collectables")
 	TSubclassOf<ACollectable> CommonCollectableClass;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Collectables")
 	TSubclassOf<ACollectable> RareCollectableClass;
 
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UCameraShake> ScoredCameraShake;
+	UPROPERTY(EditAnywhere, Category = "Blocks")
+	TSubclassOf<UCameraShake> CommonBlockPlacedCameraShake;
 
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UCameraShake> CollectedCameraShake;
+	UPROPERTY(EditAnywhere, Category = "Collectables")
+	TSubclassOf<UCameraShake> CommonCollectedCameraShake;
+
+	// The chance of spawning a common collectable: gametime is moduloed by this then checked against zero.
+	UPROPERTY(EditAnywhere, Category = "Collectables")
+	float CommonCollectableSpawnChance;
+	
+	// The chance of spawning a common collectable: gametime is moduloed by this then checked against zero.
+	UPROPERTY(EditAnywhere, Category = "Collectables")
+	float RareCollectableSpawnChance;
 
 	// Amount this dropper rises after placing each block
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Blocks|Placement")
 	float HeightStep;
 
 	// The height (above the highest place block) at which a collectable can spawn
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Collectables")
 	float CollectableSpawnHeight;
 
 	// Speed (frequency) at which the block oscillates (move this to ABlock class).
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Blocks|Placement")
 	float BlockMoveSpeed;
 
 	// Amplitude of the block's oscillation (move this to ABlock class).
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Blocks|Placement")
 	float BlockMoveAmplitude;
 
 	// Whether or not this block dropper is at the starting phase of the state machine (maybe use enums for this instead?)
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Blocks|Placement|State")
 	uint32 bEntry : 1;
 
 	// Whether we are awaiting player input (maybe rename to bAwaitingInput?)
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Blocks|Placement|State")
 	uint32 bPlayerChoosingDropPoint : 1;
 
 	// Increments with score, so we can have build-up SFX

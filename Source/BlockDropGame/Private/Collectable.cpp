@@ -32,12 +32,12 @@ ACollectable::ACollectable()
 	
 }
 
-UStaticMeshComponent * ACollectable::GetMesh() const
+UStaticMeshComponent* ACollectable::GetMesh() const
 {
 	return Mesh;
 }
 
-USphereComponent * ACollectable::GetSphereTrigger() const
+USphereComponent* ACollectable::GetSphereTrigger() const
 {
 	return SphereTrigger;
 }
@@ -57,6 +57,8 @@ void ACollectable::Tick(float DeltaTime)
 	Mesh->AddWorldRotation(SpinAmount);
 }
 
+const FName ACollectable::CollectableTag = "Collectable";
+
 void ACollectable::NotifyActorBeginOverlap(AActor * OtherActor)
 {
 	if (!bCollected)
@@ -71,7 +73,7 @@ void ACollectable::NotifyActorBeginOverlap(AActor * OtherActor)
 void ACollectable::OnCollected(AActor* Collector)
 {
 	// Let other actors know this actor has been collected.
-	NotifyState(EGameState::EGS_CollectedCollectable);	
+	NotifyState(GetCollectedGameState());	
 
 	// Hide the actor, then destroy it.
 	SetActorHiddenInGame(true);
@@ -80,9 +82,20 @@ void ACollectable::OnCollected(AActor* Collector)
 
 void ACollectable::NotifyState(const EGameState::Type State)
 {
+	// Tell the block dropper we sscored
 	if (IGameStateNotifier* const Notifier = Cast<IGameStateNotifier, AActor>(GetOwner()))
 	{
 		Notifier->NotifyState(State);
 	}
+}
+
+const EGameState::Type ACollectable::GetCollectedGameState() const
+{
+	return EGameState::EGS_CollectedCommonCollectable;
+}
+
+const EGameState::Type ACollectable::GetMissedGameState() const
+{
+	return EGameState::EGS_MissedCollectable;
 }
 

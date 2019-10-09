@@ -1,6 +1,10 @@
 Glitches/Issues:
 
 
+* Score is reset to 0 when the pause menu widget is swapped into the score widget. I need to refresh the HUD.
+* BlockDropper doesn't receive the missed collectable message
+* The BlockDropper's RNG seems to only generate the shrinking collectable class
+* RNG doesn't seem random enough. Maybe I'll just use delta time moduloed.
 * The camera and block dropper have gone too high after about 25 blocks: the rate at which they rise should be relative to each block's size.
 * Game doesn't fail when blocks fall off the tower (solve this with a volume whose overlap detects falling blocks).
 * Game doesn't fail when blocks touch a block then touch a non-block actor 
@@ -11,9 +15,6 @@ Glitches/Issues:
 Basic ToDos here only:
 
 
-# The shrinking collectable should destroy when its scale is about 0.02 (anything else is too long)
-# Shrinking collectable needs a sound for when it's missed.
-# Shrinking collectable needs a sound for when it's collected.
 # Simplify the pipeline for adding new means of scoring: maybe the game mode could own instances of structs relating to that kind of thing?
 # UX flow: Go to an ugly high score screen on losing.
 # Save a high score and display it on the score hud. If it's empty, display 0.

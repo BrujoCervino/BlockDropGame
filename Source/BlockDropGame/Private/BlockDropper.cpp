@@ -21,13 +21,16 @@ ABlockDropper::ABlockDropper()
 	SolidMaterial(nullptr),
 	GhostlyMaterial(nullptr),
 	ScoredCue(nullptr),
-	CollectedCue(nullptr),
+	CommonCollectedCue(nullptr),
+	RareCollectedCue(nullptr),
 	FailedCue(nullptr),
 	BlockClass(ABlock::StaticClass()),
 	CommonCollectableClass(ACollectable::StaticClass()),
 	RareCollectableClass(ACollectable::StaticClass()),
-	ScoredCameraShake(),
-	CollectedCameraShake(),
+	CommonBlockPlacedCameraShake(),
+	CommonCollectedCameraShake(),
+	CommonCollectableSpawnChance(2.0f),
+	RareCollectableSpawnChance(3.0f),
 	HeightStep(20.0f),	
 	CollectableSpawnHeight(60.0f),
 	BlockMoveSpeed(30.0f),			  
@@ -45,6 +48,8 @@ ABlockDropper::ABlockDropper()
 	{
 		// Let it be the root of this actor
 		SetRootComponent(PlacingParticle);
+		PlacingParticle->bAllowRecycling = true;
+		PlacingParticle->CreateDynamicMaterialInstance(0);
 	}
 }
 
@@ -82,20 +87,30 @@ void ABlockDropper::NotifyState(const EGameState::Type State)
 			SoundToPlay = FailedCue;
 			break;
 		}
-		case (EGameState::EGS_Scored):
+		case (EGameState::EGS_PlacedCommonBlock):
 		{
 			SoundToPlay = ScoredCue;
-			ShakeToPlay = ScoredCameraShake;
+			ShakeToPlay = CommonBlockPlacedCameraShake;
 			// Increase the pitch of our sound
 			++PitchMultiplier;
 			break;
 		}
-		case (EGameState::EGS_CollectedCollectable):
+		case (EGameState::EGS_CollectedCommonCollectable):
 		{
-			SoundToPlay = CollectedCue;
-			ShakeToPlay = CollectedCameraShake;
+			SoundToPlay = CommonCollectedCue;
+			ShakeToPlay = CommonCollectedCameraShake;
 			// Increase the pitch of our sound more than usual, to show the collectable is an extra special way of earning points
-			PitchMultiplier += (int32)EGameState::EGS_CollectedCollectable;
+			PitchMultiplier += (int32)EGameState::EGS_CollectedCommonCollectable;
+			break;
+		}
+		case(EGameState::EGS_CollectedRareCollectable):
+		{
+			SoundToPlay = RareCollectedCue;
+			break;
+		}
+		case(EGameState::EGS_MissedCollectable):
+		{
+			SoundToPlay = RareMissedCue;
 			break;
 		}
 		default:
@@ -114,7 +129,7 @@ void ABlockDropper::NotifyState(const EGameState::Type State)
 		PC->ClientPlayCameraShake(ShakeToPlay);
 	}
 
-	// Tell the game mode we scored
+	// Tell the pawn we scored
 	if (IGameStateNotifier* const Notifier = Cast<IGameStateNotifier, AActor>(GetOwner()))
 	{
 		Notifier->NotifyState(State);
@@ -167,19 +182,23 @@ void ABlockDropper::Tick(float DeltaTime)
 			PlacingParticle->AttachToComponent(CurrentBlock->GetMesh(), FAttachmentTransformRules::KeepWorldTransform);
 
 			// Every so often (and if the topmost block is valid)
-			if (FMath::RandRange(0, 3) == 0 && SpawnedBlocks.Num() != 0)
+			// 
+			const float GameTime = CurrentWorld->TimeSeconds;
+			const float ResultingSpawnChance = FMath::Fmod(GameTime, CommonCollectableSpawnChance);
+			if (FMath::IsNearlyZero(ResultingSpawnChance, 0.2f) && SpawnedBlocks.Num() != 0)
 			{
 				// Print a string to confirm out collectable appeared (for if we can't see it)
 				UKismetSystemLibrary::PrintString(this, TEXT("Collectable placed!"));
 				
 				// Determine whether the class to spawn will be common or rare :)
-				UClass* const ClassToSpawn = FMath::RandRange(0,2) == 0? RareCollectableClass : CommonCollectableClass;
+				const float ResultingRareSpawnChance = FMath::Fmod(GameTime, RareCollectableSpawnChance);
+				UClass* const CollectableClassToSpawn = FMath::IsNearlyZero(ResultingRareSpawnChance, 0.2f) ? RareCollectableClass : CommonCollectableClass;
 
 				FTransform TransformOfHighestPlacedBlock = SpawnedBlocks.Last()->GetActorTransform();
 				TransformOfHighestPlacedBlock += FTransform(FRotator::ZeroRotator, FVector(0.0f, 0.0f, CollectableSpawnHeight), FVector::ZeroVector);
 				
 				// Spawn a collectable atop the topmost block
-				CurrentWorld->SpawnActor<ACollectable>(ClassToSpawn, TransformOfHighestPlacedBlock, BlockSpawnParams);
+				CurrentWorld->SpawnActor<ACollectable>(CollectableClassToSpawn, TransformOfHighestPlacedBlock, BlockSpawnParams);
 			}
 
 			// To avoid unfair gameplay, every few blocks stacked will stop simulating physics. 
@@ -225,6 +244,9 @@ void ABlockDropper::Tick(float DeltaTime)
 		bEntry = true;
 		bPlayerChoosingDropPoint = true;
 	}
+	
+	// Outside the state machine:
+
 }
 
 void ABlockDropper::ReleaseBlock()

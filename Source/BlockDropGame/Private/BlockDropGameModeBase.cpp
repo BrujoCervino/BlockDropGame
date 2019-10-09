@@ -5,7 +5,7 @@
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 #include "Public/BlockDropPawn.h"
-#include "Public/BlockDropper.h"
+#include "Public/BlockDropper.h" // For cleaner code, this should just be done inside the pawn
 #include "TimerManager.h"
 
 ABlockDropGameModeBase::ABlockDropGameModeBase()
@@ -14,8 +14,10 @@ ABlockDropGameModeBase::ABlockDropGameModeBase()
 	BlockDropperSpawnHeight(20.0f),
 	RestartLevelTimerHandle(),
 	TimeSecondsUntilLevelRestarts(0.5f),
-	PointsPerSuccessfulHit(5),
-	PointsPerBasicCollectable(20)
+	PointsPerCommonBlock(5),
+	PointsPerCommonCollectable(20),
+	PointsPerRareCollectable(40),
+	PointsPerMissedCollectable(0)
 {
 }
 
@@ -27,21 +29,32 @@ int32 ABlockDropGameModeBase::GetScorePerGameState(const EGameState::Type State)
 	{
 		case(EGameState::EGS_GameOver):
 		{
+			RestartLevel();
 			break;
 		}
-		case(EGameState::EGS_Scored):
+		case(EGameState::EGS_PlacedCommonBlock):
 		{
-			Ret = PointsPerSuccessfulHit;
+			Ret = PointsPerCommonBlock;
 			break;
 		}
-		case(EGameState::EGS_CollectedCollectable):
+		case(EGameState::EGS_CollectedCommonCollectable):
 		{
-			Ret = PointsPerBasicCollectable;
+			Ret = PointsPerCommonCollectable;
+			break;
+		}
+		case(EGameState::EGS_CollectedRareCollectable):
+		{
+			Ret = PointsPerRareCollectable;
+			break;
+		}
+		case(EGameState::EGS_MissedCollectable):
+		{
+			Ret = PointsPerMissedCollectable;
 			break;
 		}
 		default:
 		{
-			// The switch should never be able to reach this point
+			// This should remain unreachable
 			checkNoEntry();
 			break;
 		}
@@ -99,8 +112,26 @@ void ABlockDropGameModeBase::NotifyState(const EGameState::Type State)
 			RestartLevel();
 			break;
 		}
-		case(EGameState::EGS_Scored):
+		case(EGameState::EGS_PlacedCommonBlock):
 		{
+			break;
+		}
+		case(EGameState::EGS_CollectedCommonCollectable):
+		{
+			break;
+		}
+		case(EGameState::EGS_CollectedRareCollectable):
+		{
+			break;
+		}
+		case(EGameState::EGS_MissedCollectable):
+		{
+			break;
+		}
+		default:
+		{
+			// This should remain unreachable
+			checkNoEntry();
 			break;
 		}
 	}

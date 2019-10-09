@@ -42,9 +42,18 @@ protected:
 	virtual void NotifyState(const EGameState::Type State) override;
 	//~ End IGameStateNotifier Interface
 
+	// The state sent by this collectable when collected
+	virtual const EGameState::Type GetCollectedGameState() const;
+
+	// The state sent by this collectable when missed
+	virtual const EGameState::Type GetMissedGameState() const;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	// The tag against which we'll check whether another class is a collectable
+	static const FName CollectableTag;
 
 protected:
 

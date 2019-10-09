@@ -1,12 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BlockDropPawn.h"
-#include "BlockDropper.h"
+#include "BlockDropPawn.h"				
+#include "BlockDropPlayerController.h"	
+#include "BlockDropper.h"			
 #include "Components/InputComponent.h"
-#include "Camera/CameraComponent.h"
-#include "EngineUtils.h"
-#include "Kismet/GameplayStatics.h"
+#include "Camera/CameraComponent.h"	
+#include "EngineUtils.h"			
+#include "Kismet/GameplayStatics.h"	
 #include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
@@ -55,7 +56,7 @@ void ABlockDropPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("ReleaseBlock", IE_Pressed, this, &ABlockDropPawn::ReleaseBlock);
 
 	// UI-based actions & axes
-	PlayerInputComponent->BindAction("PauseGame", IE_Pressed, this, &ABlockDropPawn::PauseGame);
+	PlayerInputComponent->BindAction("PauseGame", IE_Pressed, this, &ABlockDropPawn::PauseGame).bExecuteWhenPaused = true;
 	PlayerInputComponent->BindAction("QuitGame", IE_Pressed, this, &ABlockDropPawn::QuitGame);
 
 }
@@ -75,7 +76,16 @@ void ABlockDropPawn::ReleaseBlock()
 
 void ABlockDropPawn::PauseGame()
 {
+	// Store whether we should pause or unpause the game
 	const bool bShouldPause = !(UGameplayStatics::IsGamePaused(this));
+
+	// Set the visibility of the pause widget
+	if (ABlockDropPlayerController* const PC = Cast<ABlockDropPlayerController, AController>( GetController() ))
+	{
+		PC->OnPaused(bShouldPause);
+	}
+
+	// Set the game's pause state
 	UGameplayStatics::SetGamePaused(this, bShouldPause);
 }
 
@@ -113,8 +123,26 @@ void ABlockDropPawn::NotifyState(const EGameState::Type State)
 		{
 			break;
 		}
-		case(EGameState::EGS_Scored):
+		case(EGameState::EGS_PlacedCommonBlock):
 		{
+			break;
+		}
+		case(EGameState::EGS_CollectedCommonCollectable):
+		{
+			break;
+		}
+		case(EGameState::EGS_CollectedRareCollectable):
+		{
+			break;
+		}
+		case(EGameState::EGS_MissedCollectable):
+		{
+			break;
+		}
+		default:
+		{
+			// This should remain unreachable
+			checkNoEntry();
 			break;
 		}
 	}

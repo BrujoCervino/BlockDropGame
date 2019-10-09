@@ -58,8 +58,20 @@ private:
 
 	// Score awarded for the most basic method of scoring: one block successfully fell onto another
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	int32 PointsPerSuccessfulHit;
+	int32 PointsPerCommonBlock;
 
+	// Score awarded for collecting a common collectable
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	int32 PointsPerBasicCollectable;
+	int32 PointsPerCommonCollectable;
+
+	// Score awarded for collecting a rare collectable
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	int32 PointsPerRareCollectable;
+
+	// Score awarded for missing a rare collectable. 
+	// Valued at 0 for now. But in harder game modes, 
+	//		it can be used to punish the player for messing up.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	int32 PointsPerMissedCollectable;
+
 };

@@ -82,7 +82,7 @@ void ABlock::Tick(float DeltaTime)
 	
 	if (GetVelocity() != FVector::ZeroVector)
 	{
-		NotifyState(EGameState::EGS_Scored);
+		NotifyState(EGameState::EGS_PlacedCommonBlock);
 		SetActorTickEnabled(false);
 	}
 }

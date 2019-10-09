@@ -3,31 +3,56 @@
 
 #include "BlockDropPlayerController.h"
 #include "Blueprint/UserWidget.h"
-#include "BlockDropPawn.h"			// This needs to be removed, due to bad code design: why is the player controller allowed to access this?
 #include "BlockDropGameModeBase.h"	// This needs to be removed, due to bad code design: why is the player controller allowed to access this?
 
 ABlockDropPlayerController::ABlockDropPlayerController()
 	:
 	CurrentWidget(nullptr),
 	ScoreWidgetClass(UUserWidget::StaticClass()),
-	PauseWidgetClass(UUserWidget::StaticClass()),
+	PauseMenuWidgetClass(UUserWidget::StaticClass()),
+	GameOverMenuClass(UUserWidget::StaticClass()),
 	Score(0)
 {
 }
 
 void ABlockDropPlayerController::AddScore(int32 ScoreToAdd)
 {
-	// Do the math
-
 	// Set the score
 	Score += ScoreToAdd;
 	// Update the displayed score
-	NotifyState(EGameState::EGS_Scored);
+	NotifyState(EGameState::EGS_PlacedCommonBlock);
 }
 
 int32 ABlockDropPlayerController::GetScore() const
 {
 	return Score;
+}
+
+void ABlockDropPlayerController::OnPaused(const bool bPaused)
+{
+	// If the current widget is valid,
+	if (CurrentWidget)
+	{
+		// Remove and nullify it.
+		CurrentWidget->RemoveFromViewport();
+		CurrentWidget = nullptr;
+	}
+	
+	// Determine the new widget class: if the game was paused, the pause widget. Else, the default score widget
+	UClass* const NewWidgetClass = bPaused ? PauseMenuWidgetClass : ScoreWidgetClass;
+
+	// If the new widget class is valid,
+	if (NewWidgetClass)
+	{
+		// Create it,
+		CurrentWidget = CreateWidget<UUserWidget>(this, NewWidgetClass);
+		// Ensure it's valid,
+		if (CurrentWidget)
+		{
+			// Add it to the viewport.
+			CurrentWidget->AddToViewport();
+		}
+	}
 }
 
 void ABlockDropPlayerController::BeginPlay()
@@ -41,30 +66,46 @@ void ABlockDropPlayerController::BeginPlay()
 
 void ABlockDropPlayerController::NotifyState(const EGameState::Type State)
 {
+	int32 ScoreToDisplay = 0;
 	switch (State)
 	{
 		case(EGameState::EGS_GameOver):
 		{
+			RestartLevel();
 			break;
 		}
-		
-		case(EGameState::EGS_Scored):
+		case(EGameState::EGS_PlacedCommonBlock):
 		{
-			
+			break;
 		}
-		case(EGameState::EGS_CollectedCollectable):
+		case(EGameState::EGS_CollectedCommonCollectable):
 		{
-			int32 ScoreToDisplay = 0;
-			if (ABlockDropGameModeBase* const GM = Cast<ABlockDropGameModeBase, AActor>(GetOwner()->GetOwner()))
-			{
-				ScoreToDisplay = GM->GetScorePerGameState(State);
-			}
-			
-			UpdateDisplayedScore(ScoreToDisplay);
-			UpdateDisplayedScore_Implementation(ScoreToDisplay);
+			break;
+		}
+		case(EGameState::EGS_CollectedRareCollectable):
+		{
+			break;
+		}
+		case(EGameState::EGS_MissedCollectable):
+		{
+			break;
+		}
+		default:
+		{
+			// This should remain unreachable
+			checkNoEntry();
 			break;
 		}
 	}
+	// This can be avoided by just having an interface call or event sent to this class by the pawn,
+	//		recieved by the game mode.
+	if (ABlockDropGameModeBase* const GM = Cast<ABlockDropGameModeBase, AActor>(GetOwner()->GetOwner()))
+	{
+		ScoreToDisplay = GM->GetScorePerGameState(State);
+	}
+
+	UpdateDisplayedScore(ScoreToDisplay);
+	UpdateDisplayedScore_Implementation(ScoreToDisplay);
 }
 
 void ABlockDropPlayerController::SetScore(const int32 InScore)
