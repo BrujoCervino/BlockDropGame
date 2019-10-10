@@ -55,6 +55,14 @@ void ABlockDropPlayerController::OnPaused(const bool bPaused)
 	}
 }
 
+void ABlockDropPlayerController::RestartLevel()
+{
+	// Show the game over screen
+	
+	// Restart the level
+	Super::RestartLevel();
+}
+
 void ABlockDropPlayerController::BeginPlay()
 {
 	CurrentWidget = CreateWidget<UUserWidget>(this, ScoreWidgetClass);
@@ -110,4 +118,9 @@ void ABlockDropPlayerController::NotifyState(const EGameState::Type State)
 
 void ABlockDropPlayerController::SetScore(const int32 InScore)
 {
+}
+
+void ABlockDropPlayerController::UpdateDisplayedScore_Implementation(const int32 InScore)
+{
+	UpdateDisplayedScore(Score);
 }

@@ -33,6 +33,10 @@ public:
 	// Should be done by event subscription :)
 	virtual void OnPaused(const bool bPaused);
 
+	//~ Begin APlayerController interface 
+	virtual void RestartLevel() override;
+	//~ End APlayerController interface
+
 protected:
 
 	// Called when the game starts or when spawned
@@ -47,8 +51,8 @@ protected:
 
 	// Updates the displayed score. Currently Blueprint Only.
 	UFUNCTION(BlueprintNativeEvent, meta = (BlueprintProtected))
-	void UpdateDisplayedScore(const int32 InScore);
-	virtual void UpdateDisplayedScore_Implementation(const int32 InScore) {}
+	void UpdateDisplayedScore(const int32 InScore);								// Defined in Blueprint
+	virtual void UpdateDisplayedScore_Implementation(const int32 InScore);		// Defined in C++
 
 	// The widget currently displayed
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BlueprintProtected))
